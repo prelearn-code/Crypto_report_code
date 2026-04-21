@@ -1,27 +1,42 @@
 # Crypto_report_code
 
-教学版 ORE 复现项目（第一阶段：small-domain ORE）。
+论文《Order-Revealing Encryption: New Constructions, Applications, and Lower Bounds》的复现项目。
 
-## 已完成
+当前仓库包含两套实现：
 
-- `src/common/`：比较编码、序列化、PRF/哈希工具、小域 PRP（seeded Fisher-Yates）
-- `src/ore_small/`：`Setup / EncryptL / EncryptR / Compare / Decrypt`
-- `tests/test_small_ore.py`：正确性与解密测试
+- `src/`：Python 教学版（small-domain / large-domain / range-query / benchmark）。
+- `cpp/`：C++ 重构版（模块化实现，强调结构清晰与核心思想）。
 
-## 运行测试
+## C++ 重构版结构
+
+```text
+cpp/
+  include/ore/
+    common.hpp          # cmp3/编码/PRF哈希接口/小域PRP
+    small_ore.hpp       # small-domain ORE API
+    large_ore.hpp       # large-domain ORE API
+    range_query.hpp     # RQ client/server API
+  src/
+    common.cpp
+    small_ore.cpp
+    large_ore.cpp
+    range_query.cpp
+  examples/demo.cpp     # 演示程序
+  tests/test_main.cpp   # 端到端断言测试
+  CMakeLists.txt
+```
+
+## C++ 构建与运行
+
+```bash
+cmake -S cpp -B cpp/build
+cmake --build cpp/build -j
+./cpp/build/ore_tests
+./cpp/build/ore_demo
+```
+
+## Python 测试
 
 ```bash
 python -m pytest -q
-```
-
-## small-domain 快速示例
-
-```python
-from ore_small.scheme import SmallDomainORE
-
-ore = SmallDomainORE.setup(domain_size=32)
-ct_l = ore.encrypt_left(7)
-ct_r = ore.encrypt_right(11)
-print(ore.compare(ct_l, ct_r))  # 1, because 7 < 11
-print(ore.decrypt(ct_r))        # 11
 ```
